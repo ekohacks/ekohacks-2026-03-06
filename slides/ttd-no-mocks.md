@@ -704,6 +704,32 @@ Hard-coded to `process`. No way to test without actually writing to stdout. Let'
 
 ---
 
+## FIRST ATTEMPT: THE SPAGHETTI WAY
+
+### We could use an isNull flag. It works, but it's not good code.
+
+```javascript
+static createNull() {
+    return new CommandLine(process, true);  // pass isNull flag
+}
+
+constructor(proc, isNull) {
+    this._process = proc;
+    this._isNull = isNull;
+}
+
+writeOutput(text) {
+    if (this._isNull) return;              // spaghetti: skip the write
+    this._process.stdout.write(text);
+}
+```
+
+This will work. But with more complex infrastructure it turns into spaghetti code. Also we want our nullable to **run the same code paths** as the real thing. This isn't that. My preferred way is an embedded stub.
+
+<span class="footer-brand">EKOHACKS</span>
+
+---
+
 ## LIVE CODING: STEP 1 -- MAKE COMMANDLINE NULLABLE
 
 ### `src/infrastructure/command_line.js` -- the solution
@@ -816,32 +842,6 @@ describe("Nullability", function() {
     });
 });
 ```
-
-<span class="footer-brand">EKOHACKS</span>
-
----
-
-## FIRST ATTEMPT: THE SPAGHETTI WAY
-
-### We could use an isNull flag. It works, but it's not good code.
-
-```javascript
-static createNull() {
-    return new CommandLine(process, true);  // pass isNull flag
-}
-
-constructor(proc, isNull) {
-    this._process = proc;
-    this._isNull = isNull;
-}
-
-writeOutput(text) {
-    if (this._isNull) return;              // spaghetti: skip the write
-    this._process.stdout.write(text);
-}
-```
-
-This will work. But with more complex infrastructure it turns into spaghetti code. Also we want our nullable to **run the same code paths** as the real thing. This isn't that. My preferred way is an embedded stub.
 
 <span class="footer-brand">EKOHACKS</span>
 
