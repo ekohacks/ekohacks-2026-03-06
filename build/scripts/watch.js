@@ -136,6 +136,8 @@ async function playSoundAsync(filename) {
 			// If on Windows create a Media.SoundPlayer .Net object to play the sound, it is invoked through powershell
 			// note that Media.SoundPlayer has a restriction of only working on .wav files.
 			await sh.runSilentlyAsync(`powershell`,['-c',`(New-Object Media.SoundPlayer "${path}").PlaySync();`]);
+		} else if (process.platform === 'linux') {
+			await sh.runSilentlyAsync("aplay", [ path ]);
 		} else {
 			// Designed for MacOS, which has built-in 'afplay' command
 			await sh.runSilentlyAsync("afplay", [ path ]);
